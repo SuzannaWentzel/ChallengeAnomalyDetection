@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Anomaly detection</string>
+    <string name="title_activity_maps">Anomaly map</string>
+</resources>
