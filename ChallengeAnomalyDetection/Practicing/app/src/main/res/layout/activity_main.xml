@@ -9,109 +9,22 @@
     android:orientation="vertical"
     >
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/layoutGyroHeader"
-        android:layout_marginTop="10sp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Gyroscope values:" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:id="@+id/layoutXGyroValue"
-        android:layout_below="@+id/layoutGyroHeader"
-        android:layout_marginTop="10sp">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/xGyroValue"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:id="@+id/layoutYGyroValue"
-        android:layout_below="@+id/layoutXGyroValue"
-        android:layout_marginTop="10sp">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/yGyroValue"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:id="@+id/layoutZGyroValue"
-        android:layout_below="@+id/layoutYGyroValue"
-        android:layout_marginTop="10sp">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/zGyroValue"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/layoutAccHeader"
-        android:layout_marginTop="10sp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Accelerometer values:" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:id="@+id/layoutXAccValue"
-        android:layout_below="@+id/layoutGyroHeader"
-        android:layout_marginTop="10sp">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/xAccValue"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:id="@+id/layoutYAccValue"
-        android:layout_below="@+id/layoutXAccValue"
-        android:layout_marginTop="10sp">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/yAccValue"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:id="@+id/layoutZAccValue"
-        android:layout_below="@+id/layoutYGyroValue"
-        android:layout_marginTop="10sp">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/zAccValue"/>
-    </LinearLayout>
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:id="@+id/layoutZAccValue"-->
+<!--        android:layout_below="@+id/layoutYGyroValue"-->
+<!--        android:layout_marginTop="10sp">-->
+<!--        <TextView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/zAccValue"/>-->
+<!--    </LinearLayout>-->
 
     <Button
         android:id="@+id/openMaps"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Go to maps"/>
+        android:text="Start tracking" />
 </LinearLayout>
