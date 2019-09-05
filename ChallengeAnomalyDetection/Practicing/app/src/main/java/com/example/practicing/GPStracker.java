@@ -32,16 +32,23 @@ public class GPStracker extends AppCompatActivity implements LocationListener {
         LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         boolean isGPSEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-        //
+        // check whether GPS is enabled
         if(isGPSEnabled) {
+            // get and return location
             lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500,0,this);
             Location l = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             return l;
         } else {
+            // show that GPS is disabled
             Toast.makeText(context, "please enable gps", Toast.LENGTH_LONG);
         }
         return null;
     }
+
+
+
+    // couple of functions needed for implementing LocationListener
+
     @Override
     public void onLocationChanged(Location location) {
 
