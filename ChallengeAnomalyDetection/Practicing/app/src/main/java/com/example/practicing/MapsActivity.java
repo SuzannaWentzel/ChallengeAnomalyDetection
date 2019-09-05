@@ -33,14 +33,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private GoogleMap mMap;
     private SensorManager sensorManager;
-    private Sensor accelerometer, gyroscope;
-    private List<Float> temp;
+    private Sensor accelerometer;
+    private List<Float> temp;               // temp is the previous three measurements of the zvalue of the accelerometer
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate: Created mapsactivity instance");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -48,12 +48,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         temp = new ArrayList<>();
 
+        // initialize accelerometer and set listener on the sensor
         Log.d(TAG, "onCreate: Initializing Sensor services");
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener(MapsActivity.this, accelerometer, sensorManager.SENSOR_DELAY_NORMAL);
-
         Log.d(TAG, "onCreate: Registered gyroscope and accelerometer");
     }
 
@@ -71,21 +70,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-//        // Add a marker in Sydney and move the camera
-//        LatLng uTwente = new LatLng(52.2398, 6.8500);
-//        addCustomMarker(googleMap, uTwente, "severe");
-//
+        // move camera to O&O
         LatLng OnO = new LatLng(52.2387, 6.8561);
-//        addCustomMarker(googleMap, OnO, "bad");
         mMap.moveCamera(CameraUpdateFactory.newLatLng(OnO));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
     }
 
+    // function for adding custom markers (colored pointers and green dot)
     public void addCustomMarker(GoogleMap googleMap, LatLng position, int severity) {
-        BitmapDescriptor image = null;
-        String title = null;
-
-        Log.d(TAG, "addCustomMarker: severity: "+ severity);
+        BitmapDescriptor image;
+        String title;
 
         switch (severity) {
             case 4:
@@ -98,18 +92,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
             case 2:
                 image = BitmapDescriptorFactory.fromResource(R.drawable.yellow);
-                title = "Speed bump";
+                title = "Mild anomaly";
                 break;
 //            case 1:
 //                image = BitmapDescriptorFactory.fromResource(R.drawable.blue);
-//                title = "Hill";
+//                title = "Different pavement";
 //                break;
             default:
                 image = BitmapDescriptorFactory.fromResource(R.drawable.green2);
-                title = "Nothing wrong";
+                title = "Route"; // (for showing route)
                 break;
         }
 
+        // add marker to maps
         if (googleMap != null) {
             Marker marker = googleMap.addMarker(new MarkerOptions()
                     .position(position)
@@ -121,20 +116,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        Log.d(TAG, "onSensorChanged: Sensor has changed: " + sensorEvent.sensor.getType());
-        Log.d(TAG, "onSensorChanged: Accelerometer values: " + "X: " + sensorEvent.values[0] + ", Y: " + sensorEvent.values[1] + ", Z: " + sensorEvent.values[2]);
+//        Log.d(TAG, "onSensorChanged: Accelerometer values: " + "X: " + sensorEvent.values[0] + ", Y: " + sensorEvent.values[1] + ", Z: " + sensorEvent.values[2]);
 
-        if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER && anomalyCode(sensorEvent.values[2]) > -1){
+        // check if sensortype is accelerometer, and if marker needs to be set
+        if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+
+            // get GPS location
             int anomalyCode = anomalyCode(sensorEvent.values[2]);
-            Log.d(TAG, "Anomaly spotted");
             GPStracker g = new GPStracker(getApplicationContext());
             Location l = g.getLocation();
 
+            // check if location could be retrieved
             if (l != null) {
-                Log.d(TAG, "Retrieving GPS coordinates" );
+                // add marker
                 double lat = l.getLatitude();
                 double lon = l.getLongitude();
-//                Toast.makeText(getApplicationContext(), "lat: " + lat + "lon: " + lon, Toast.LENGTH_LONG).show();
                 LatLng position = new LatLng(lat, lon);
                 addCustomMarker(mMap, position, anomalyCode);
             }
@@ -146,44 +142,49 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+    // function that returns severity of anomaly (0, 1, 2, 3, 4, where 0 is no anomaly and 4 is
+    // severe anomaly)
     private int anomalyCode(float zvalue) {
         float res;
 
-        if (temp.size() < 3) {
+        // check if temp has enough measurements
+        if (temp.size() < 3) {          // not enough, adding this to temp and returning this value
             temp.add(zvalue);
             res = zvalue;
         } else {
-            Log.d(TAG, "anomalyCode: array before: " + temp);
-            temp.remove(0);
+            // has enough measurements, apply smoothing by copying temp, sorting the copy and taking
+            // the median
+            temp.remove(0);             // remove oldest value
+            temp.add(zvalue);           // add newest value
 
-            temp.add(zvalue);
-            Log.d(TAG, "anomalyCode: array after: " + temp);
-
+            // copy the temporary measurements
             List<Float> copy = new ArrayList<>();
             copy.add(temp.get(0));
             copy.add(temp.get(1));
             copy.add(temp.get(2));
 
-//            float[] copy = new float[3];
-//            System.arraycopy(temp, 0, copy, 0, 2);
+            // sort the copy
             Collections.sort(copy);
+
+            // find median
             res = copy.get(1);
         }
 
-        Log.d(TAG, "Checking if anomaly ...");
-        float tresholdSevere = (float) 2.3;
-        float tresholdBad = (float) 2.0;
-        float tresholdSpeedbump = (float) 1.7;
-        float tresholdHill = (float) 1.4;
+        // defined tresholds:
+        float tresholdSevere = (float) 4;
+        float tresholdBad = (float) 2.6;
+        float tresholdSpeedbump = (float) 1.6;
+        float tresholdHill = (float) 0.8;
 
-        if((res - 9.81) > tresholdSevere || (res - 9.81) < -tresholdSevere){
+        // check for anomalies, classify anomaly in severity
+        if((res - 9.81) > tresholdSevere || (res - 9.81) < -tresholdSevere){    // severe
             Log.d(TAG, "anomalyCode: anomaly found");
             return 4;
-        } else if ((res - 9.81) > tresholdBad || (res - 9.81) < -tresholdBad){
+        } else if ((res - 9.81) > tresholdBad || (res - 9.81) < -tresholdBad){  // bad
             return 3;
-        } else if ((res - 9.81) > tresholdSpeedbump || (res - 9.81) < -tresholdSpeedbump) {
+        } else if ((res - 9.81) > tresholdSpeedbump || (res - 9.81) < -tresholdSpeedbump) { // mild
             return 2;
-//        } else if ((res - 9.81) > tresholdHill || (res - 9.81) < -tresholdHill){
+//        } else if ((res - 9.81) > tresholdHill || (res - 9.81) < -tresholdHill){ // different pavement
 //            return 1;
         } else {
             return 0;
