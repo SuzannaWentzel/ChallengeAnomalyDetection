@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Anomaly detection</string>
+    <string name="app_name">Cycling tracker</string>
     <string name="title_activity_maps">Anomaly map</string>
 </resources>
