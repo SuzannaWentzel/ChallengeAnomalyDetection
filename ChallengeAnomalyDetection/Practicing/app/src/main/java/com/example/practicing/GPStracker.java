@@ -14,19 +14,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 public class GPStracker extends AppCompatActivity implements LocationListener {
+
     Context context;
+
     public  GPStracker(Context c){
         context = c;
     }
 
     public Location getLocation() {
-
+        // check whether permission is given to use GPS data
         if  (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
             Toast.makeText(context, "Permission not granted", Toast.LENGTH_SHORT);
             return null;
         }
+
+        // attempt to access GPS data
         LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         boolean isGPSEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+        //
         if(isGPSEnabled) {
             lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500,0,this);
             Location l = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);

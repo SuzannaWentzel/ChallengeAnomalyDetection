@@ -8,13 +8,8 @@
   <component name="ChangeListManager">
     <list default="true" id="f786c16f-49c6-43ed-b5f7-17dc62a98cd1" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/../ChallengeAnomalyDetection/Practicing/app/src/debug/res/values/google_maps_api.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../ChallengeAnomalyDetection/Practicing/app/src/debug/res/values/google_maps_api.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../ChallengeAnomalyDetection/Practicing/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../ChallengeAnomalyDetection/Practicing/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../ChallengeAnomalyDetection/Practicing/app/src/main/java/com/example/practicing/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ChallengeAnomalyDetection/Practicing/app/src/main/java/com/example/practicing/MainActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../ChallengeAnomalyDetection/Practicing/app/src/main/java/com/example/practicing/Maps.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../ChallengeAnomalyDetection/Practicing/app/src/main/java/com/example/practicing/MapsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ChallengeAnomalyDetection/Practicing/app/src/main/java/com/example/practicing/MapsActivity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../ChallengeAnomalyDetection/Practicing/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../ChallengeAnomalyDetection/Practicing/app/src/main/res/layout/activity_main.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../ChallengeAnomalyDetection/Practicing/app/src/main/res/layout/activity_maps.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../ChallengeAnomalyDetection/Practicing/app/src/main/res/layout/activity_maps.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../ChallengeAnomalyDetection/Practicing/app/src/main/res/layout/activity_maps2.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -49,7 +44,7 @@
   <component name="ProjectConfigurationFiles">
     <option name="files">
       <list>
-        <option value="$PROJECT_DIR$/.idea/vcs.xml" />
+        <option value="$PROJECT_DIR$/app/app.iml" />
       </list>
     </option>
   </component>
@@ -183,7 +178,7 @@
       <window_info anchor="bottom" id="Event Log" order="5" side_tool="true" />
       <window_info anchor="bottom" id="Build" order="6" weight="0.12177651" />
       <window_info anchor="bottom" id="Android Profiler" order="7" />
-      <window_info anchor="bottom" id="Run" order="8" visible="true" weight="0.3295129" />
+      <window_info anchor="bottom" id="Run" order="8" weight="0.3295129" />
       <window_info anchor="right" id="Preview" weight="0.32871014" />
       <window_info anchor="right" id="Capture Analysis" order="0" />
       <window_info anchor="right" id="Gradle" order="1" />

@@ -21,13 +21,20 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.lang.Object;
+
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, SensorEventListener {
 
     private static final String TAG = "MapsActivity";
 
     private GoogleMap mMap;
     private SensorManager sensorManager;
-    private Sensor accelerometer;
+    private Sensor accelerometer, gyroscope;
+    private List<Float> temp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,13 +45,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        Log.d(TAG, "onCreate: Reached end of onCreate");
+
+        temp = new ArrayList<>();
 
         Log.d(TAG, "onCreate: Initializing Sensor services");
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener(MapsActivity.this, accelerometer, sensorManager.SENSOR_DELAY_NORMAL);
+
         Log.d(TAG, "onCreate: Registered gyroscope and accelerometer");
     }
 
@@ -91,12 +100,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 image = BitmapDescriptorFactory.fromResource(R.drawable.yellow);
                 title = "Speed bump";
                 break;
-            case 1:
-                image = BitmapDescriptorFactory.fromResource(R.drawable.blue);
-                title = "Hill";
-                break;
+//            case 1:
+//                image = BitmapDescriptorFactory.fromResource(R.drawable.blue);
+//                title = "Hill";
+//                break;
             default:
-                image = BitmapDescriptorFactory.fromResource(R.drawable.green);
+                image = BitmapDescriptorFactory.fromResource(R.drawable.green2);
                 title = "Nothing wrong";
                 break;
         }
@@ -113,6 +122,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         Log.d(TAG, "onSensorChanged: Sensor has changed: " + sensorEvent.sensor.getType());
+        Log.d(TAG, "onSensorChanged: Accelerometer values: " + "X: " + sensorEvent.values[0] + ", Y: " + sensorEvent.values[1] + ", Z: " + sensorEvent.values[2]);
 
         if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER && anomalyCode(sensorEvent.values[2]) > -1){
             int anomalyCode = anomalyCode(sensorEvent.values[2]);
@@ -136,13 +146,45 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
-    private int anomalyCode(float value) {
-        Log.d(TAG, "Checking if anomaly ...");
-        float treshold = 4;
+    private int anomalyCode(float zvalue) {
+        float res;
 
-        if((value - 9.81) < treshold || (value - 9.81) > -treshold){
+        if (temp.size() < 3) {
+            temp.add(zvalue);
+            res = zvalue;
+        } else {
+            Log.d(TAG, "anomalyCode: array before: " + temp);
+            temp.remove(0);
+
+            temp.add(zvalue);
+            Log.d(TAG, "anomalyCode: array after: " + temp);
+
+            List<Float> copy = new ArrayList<>();
+            copy.add(temp.get(0));
+            copy.add(temp.get(1));
+            copy.add(temp.get(2));
+
+//            float[] copy = new float[3];
+//            System.arraycopy(temp, 0, copy, 0, 2);
+            Collections.sort(copy);
+            res = copy.get(1);
+        }
+
+        Log.d(TAG, "Checking if anomaly ...");
+        float tresholdSevere = (float) 2.3;
+        float tresholdBad = (float) 2.0;
+        float tresholdSpeedbump = (float) 1.7;
+        float tresholdHill = (float) 1.4;
+
+        if((res - 9.81) > tresholdSevere || (res - 9.81) < -tresholdSevere){
             Log.d(TAG, "anomalyCode: anomaly found");
             return 4;
+        } else if ((res - 9.81) > tresholdBad || (res - 9.81) < -tresholdBad){
+            return 3;
+        } else if ((res - 9.81) > tresholdSpeedbump || (res - 9.81) < -tresholdSpeedbump) {
+            return 2;
+//        } else if ((res - 9.81) > tresholdHill || (res - 9.81) < -tresholdHill){
+//            return 1;
         } else {
             return 0;
         }
