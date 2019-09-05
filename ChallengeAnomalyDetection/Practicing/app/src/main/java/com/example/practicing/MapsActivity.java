@@ -10,6 +10,7 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -77,27 +78,23 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     // function for adding custom markers (colored pointers and green dot)
-    public void addCustomMarker(GoogleMap googleMap, LatLng position, int severity) {
+    public void addCustomMarker(GoogleMap googleMap, LatLng position, int severity, float smoothedAccZ) {
         BitmapDescriptor image;
         String title;
 
         switch (severity) {
             case 4:
                 image = BitmapDescriptorFactory.fromResource(R.drawable.red);
-                title = "Severe anomaly";
+                title = "Severe anomaly, z: " + smoothedAccZ;
                 break;
             case 3:
                 image = BitmapDescriptorFactory.fromResource(R.drawable.orange);
-                title = "Anomaly";
+                title = "Anomaly, z: " + smoothedAccZ;
                 break;
             case 2:
                 image = BitmapDescriptorFactory.fromResource(R.drawable.yellow);
-                title = "Mild anomaly";
+                title = "Mild anomaly, z: " + smoothedAccZ;
                 break;
-//            case 1:
-//                image = BitmapDescriptorFactory.fromResource(R.drawable.blue);
-//                title = "Different pavement";
-//                break;
             default:
                 image = BitmapDescriptorFactory.fromResource(R.drawable.green2);
                 title = "Route"; // (for showing route)
@@ -122,7 +119,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
 
             // get GPS location
-            int anomalyCode = anomalyCode(sensorEvent.values[2]);
+            List<Float> anomalyCode = anomalyCode(sensorEvent.values[2]);
             GPStracker g = new GPStracker(getApplicationContext());
             Location l = g.getLocation();
 
@@ -132,7 +129,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 double lat = l.getLatitude();
                 double lon = l.getLongitude();
                 LatLng position = new LatLng(lat, lon);
-                addCustomMarker(mMap, position, anomalyCode);
+                addCustomMarker(mMap, position, Math.round(anomalyCode.get(0)), anomalyCode.get(1));
             }
         }
     }
@@ -142,9 +139,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
-    // function that returns severity of anomaly (0, 1, 2, 3, 4, where 0 is no anomaly and 4 is
+    // function that returns severity of anomaly (0, 2, 3, 4, where 0 is no anomaly and 4 is
     // severe anomaly)
-    private int anomalyCode(float zvalue) {
+    private List<Float> anomalyCode(float zvalue) {
+        List<Float> codeResult = new ArrayList<>();
         float res;
 
         // check if temp has enough measurements
@@ -176,18 +174,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         float tresholdSpeedbump = (float) 1.6;
         float tresholdHill = (float) 0.8;
 
+
+
         // check for anomalies, classify anomaly in severity
         if((res - 9.81) > tresholdSevere || (res - 9.81) < -tresholdSevere){    // severe
             Log.d(TAG, "anomalyCode: anomaly found");
-            return 4;
+            codeResult.add((float) 4);
         } else if ((res - 9.81) > tresholdBad || (res - 9.81) < -tresholdBad){  // bad
-            return 3;
+            codeResult.add((float) 3);
         } else if ((res - 9.81) > tresholdSpeedbump || (res - 9.81) < -tresholdSpeedbump) { // mild
-            return 2;
-//        } else if ((res - 9.81) > tresholdHill || (res - 9.81) < -tresholdHill){ // different pavement
-//            return 1;
+            codeResult.add((float) 2);
         } else {
-            return 0;
+            codeResult.add((float) 0);
         }
+
+        codeResult.add(res);
+        return codeResult;
     }
 }
